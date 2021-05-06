@@ -1913,8 +1913,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9166038291016793890}
-  m_LocalRotation: {x: -0.09408034, y: 0.70082015, z: 0.09408034, w: 0.70082015}
-  m_LocalPosition: {x: -24.11548, y: -19.273159, z: 0}
+  m_LocalRotation: {x: -0.12662014, y: 0.69567764, z: 0.12662014, w: 0.69567764}
+  m_LocalPosition: {x: -24.121876, y: -19.268328, z: 0}
   m_LocalScale: {x: 40, y: 40, z: 40}
   m_Children:
   - {fileID: 5481916926608626923}
@@ -1922,7 +1922,7 @@ Transform:
   - {fileID: 1885633361208391334}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -15.292, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: -20.631, y: 90, z: 0}
 --- !u!23 &5206008079107204329
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3386,11 +3386,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotateSpeed: 60
-  shipSpeed: 5
-  trustSpeed: 5
+  shipSpeed: 10
+  trustSpeed: 10
   trustTime: 1.5
   enginePower: 0
   trustActive: 0
+  rideOrbit: 0
 --- !u!114 &9166038291016793893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3413,12 +3414,12 @@ Rigidbody:
   m_GameObject: {fileID: 9166038291016793890}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0.2
-  m_AngularDrag: 0.05
+  m_Drag: 2
+  m_AngularDrag: 2
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
+  m_Interpolate: 1
+  m_Constraints: 96
   m_CollisionDetection: 0
 --- !u!64 &9166038291016793895
 MeshCollider:

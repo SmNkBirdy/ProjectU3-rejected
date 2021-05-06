@@ -19,5 +19,13 @@ public class CameraScript : MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, player.transform.position + cameraPosition, cameraSpeed * Time.deltaTime);
         }
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            cameraPosition += new Vector3(0,0,10) * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            cameraPosition += new Vector3(0, 0, -10) * Time.deltaTime;
+        }
     }
 }

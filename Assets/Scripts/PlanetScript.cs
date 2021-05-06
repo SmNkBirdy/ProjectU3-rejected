@@ -45,6 +45,7 @@ public class PlanetScript : MonoBehaviour
             orbitSize = 4;
         }
 
+        //отрисовка
         line = gameObject.GetComponent<LineRenderer>();
         line.positionCount = (segments + 1) * 2;
         line.useWorldSpace = false;
@@ -57,6 +58,7 @@ public class PlanetScript : MonoBehaviour
         trustActive = false;
     }
 
+    //разрушение объекта если его можно разрушить.
     private void OnTriggerEnter(Collider other)
     {
         Destructible d = other.GetComponent<Destructible>();
@@ -66,13 +68,17 @@ public class PlanetScript : MonoBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        //планета крутится ловешка мутится
         transform.Rotate(0,0,3 * Time.deltaTime);
 
+        //находим всё что в поле гравитации
         Collider[] items = Physics.OverlapSphere(gameObject.transform.position, gravitySize, physObjects);
+
         foreach (var item in items)
         {
+            //определяем работают ли трастеры
             ShipMovement sm = item.GetComponent<ShipMovement>();
             if (sm != null)
             {
@@ -82,45 +88,27 @@ public class PlanetScript : MonoBehaviour
             {
                 trustActive = false;
             }
+
+            //находим угол меж планетой и кораблём
             Vector3 direction = (transform.position - item.transform.position).normalized;
-            float angleDif = Vector3.Angle(direction,item.transform.forward);
-            float onePrc = (gravitySize - orbitSize) / 100;
-            float curGrv = Vector3.Distance(transform.position,item.transform.position) / onePrc;
-            curGrv = (gravitySize / onePrc) - curGrv;
-            if (curGrv < 0)
-            {
-                curGrv = 0;
-            }
-            curGrv = curGrv / 100;
-            float curAngP = ((Vector3.Angle(direction, item.transform.forward) + 1) / 0.9f) / 100;
+            float angleDif = Vector3.Angle(direction, item.transform.forward);
 
-            if (curAngP > 0.98f)
+            Rigidbody rb = item.GetComponent<Rigidbody>();
+            if (rb != null)
             {
-                curAngP = 0.98f;
-            }
 
-            if (!trustActive)
-            {
-                item.transform.Rotate(new Vector3(1, 0, 0), curGrv * Time.deltaTime * 5);
+                item.transform.Rotate(new Vector3(1, 0, 0) * 50 * Time.deltaTime);
                 float newAngleDif = Vector3.Angle(direction, item.transform.forward);
+                item.transform.Rotate(new Vector3(-1, 0, 0) * 50 * Time.deltaTime);
                 if (newAngleDif > angleDif)
                 {
-                    item.transform.Rotate(new Vector3(-1, 0, 0), curGrv * 2 * Time.deltaTime * 5);
+                    rb.AddTorque(new Vector3(0, 0, 1) * 3 * Time.deltaTime);
+                }
+                else
+                {
+                    rb.AddTorque(new Vector3(0, 0, -1) * 3 * Time.deltaTime);
                 }
             }
-
-            item.transform.position += direction * gravity * (curGrv - curGrv * curAngP) * Time.deltaTime;
-
-            /* РБ движение
-            float angleDif = Vector3.Angle(direction, item.transform.forward);
-            item.transform.Rotate(new Vector3(1, 0, 0), RotationSpeed * Time.deltaTime);
-            float newAngleDif = Vector3.Angle(direction, item.transform.forward);
-            if (newAngleDif > angleDif)
-            {
-                item.transform.Rotate(new Vector3(-1, 0, 0), RotationSpeed * 2 * Time.deltaTime);
-            }
-            item.GetComponent<Rigidbody>().velocity += direction * (gravity - gravity / 100 * Vector3.Distance(transform.position, item.transform.position) / (gravitySize / 100))  * Time.deltaTime / 2;
-            */
         }
-    }
+    } 
 }
