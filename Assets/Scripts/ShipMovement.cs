@@ -9,6 +9,10 @@ public class ShipMovement : MonoBehaviour
     public float trustTime = 1; //продолжительность полёта
     public float enginePower = 0; //индикация мощности движка
     public bool trustActive; //индикация работы буста
+    public speedBar sb;
+    public GameObject sc1;
+    public GameObject sc2;
+    public GameObject sc3;
 
     private float trustStart;
     private bool onOrbit;
@@ -21,6 +25,7 @@ public class ShipMovement : MonoBehaviour
     private Rigidbody rb;
     private RigidbodyConstraints strbc;
     private float orbitSpeed;
+    private float orbSpMul = 1;
 
     private void Awake()
     {
@@ -29,6 +34,7 @@ public class ShipMovement : MonoBehaviour
         trustStart = Time.time;
         onOrbit = false;
         strbc = rb.constraints;
+        orbitSpeed = shipSpeed;
     }
 
     private void getComputedData()
@@ -60,6 +66,7 @@ public class ShipMovement : MonoBehaviour
             {
                 trustStart = Time.time;
                 rb.constraints = strbc;
+                sb.speed = 1;
             }
         }
 
@@ -67,10 +74,36 @@ public class ShipMovement : MonoBehaviour
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            if (sb.speed < 1 && rideOrbit)
+            {
+                sb.speed += 0.1f * Time.deltaTime;
+            }
+        }
+        if (sb.speed > 1)
+        {
+            sb.speed = 1;
+        }
+
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            if (sb.speed > 0 && rideOrbit)
+            {
+                sb.speed -= 0.1f * Time.deltaTime;
+            }
+        }
+        if (sb.speed < 0)
+        {
+            sb.speed = 0;
+        }
     }
 
     void FixedUpdate()
     {
+        orbSpMul = sb.speed;
+
         getComputedData();
 
         trustActive = !(trustStart + trustTime < Time.time);
@@ -86,10 +119,12 @@ public class ShipMovement : MonoBehaviour
 
         //поддержание на орбите
 
-        if (orbitSize + .75f > distance && orbitSize - .75f < distance && angle > 70 && angle < 110 && !rideOrbit && !trustActive)
+        if (onOrbit && orbitSize - .75f < distance && angle > 70 && angle < 110 && !rideOrbit && !trustActive)
         {
             rideOrbit = true;
-            orbitSpeed = rb.velocity.magnitude;
+            sc1.SetActive(true);
+            sc2.SetActive(true);
+            sc3.SetActive(true);
             rb.constraints = RigidbodyConstraints.FreezeAll;
             Debug.Log(orbitSpeed);
         }
@@ -99,11 +134,14 @@ public class ShipMovement : MonoBehaviour
             if (trustActive)
             {
                 rideOrbit = false;
+                sc1.SetActive(false);
+                sc2.SetActive(false);
+                sc3.SetActive(false);
             }
+            Vector3 direction = (curPlanet.transform.position - transform.position).normalized;
             if (angle > 90)
             {
                 transform.Rotate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
-                Vector3 direction = (curPlanet.transform.position - transform.position).normalized;
                 float newAngleDif = Vector3.Angle(direction, transform.forward);
                 if (newAngleDif > angle)
                 {
@@ -113,14 +151,21 @@ public class ShipMovement : MonoBehaviour
             else
             {
                 transform.Rotate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
-                Vector3 direction = (curPlanet.transform.position - transform.position).normalized;
                 float newAngleDif = Vector3.Angle(direction, transform.forward);
                 if (newAngleDif < angle)
                 {
                     transform.Rotate(new Vector3(-1, 0, 0) * 50 * Time.fixedDeltaTime * 2);
                 }
             }
-            transform.position += transform.forward * orbitSpeed * Time.fixedDeltaTime / 2;
+            transform.position += transform.forward * orbitSpeed * orbSpMul * Time.fixedDeltaTime / 2;
+            if (distance > orbitSize)
+            {
+                transform.position += direction * 0.001f;
+            }
+            else if (distance < orbitSize)
+            {
+                transform.position -= direction * 0.001f;
+            }
         }
     }
 }
