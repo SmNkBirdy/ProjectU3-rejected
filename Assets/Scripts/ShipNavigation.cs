@@ -8,6 +8,7 @@ public class ShipNavigation : MonoBehaviour
     public float angle;
     public float distanceFromPlanet;
     public bool onOrbit;
+    public float orbitRideZone;
     [Header("settings")]
     public LayerMask planetsMask;
     public float detectionRadius = 10f;
@@ -20,6 +21,7 @@ public class ShipNavigation : MonoBehaviour
         {
             orbitSize = currentPlanet.GetComponent<PlanetScript>().orbitSize;
             angle = getAngle();
+            orbitRideZone = currentPlanet.GetComponent<PlanetScript>().orbitRideZone;
             distanceFromPlanet = Vector3.Distance(transform.position, currentPlanet.transform.position);
             if (distanceFromPlanet < orbitSize)
             {

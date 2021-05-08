@@ -6,7 +6,12 @@ public class PlanetScript : MonoBehaviour
     public float gravitySize;
     public float orbitSize;
     public float gravity = 9.8f;
+    public float orbitRideZone = 1;
+    public float radiuseRenderWidth = 0.25f;
     public LayerMask physObjects;
+    public LineRenderer orbitRenderer;
+    public LineRenderer orbitRadiusRenderer;
+    public LineRenderer gravityRadiusRenderer;
 
     private bool trustActive;
 
@@ -14,30 +19,13 @@ public class PlanetScript : MonoBehaviour
     public int segments = 50;
     private float xradius = 5;
     private float yradius = 5;
-    private LineRenderer line;
-    private int currPos = 0;
-
-
-    void CreatePoints()
-    {
-        float x;
-        float y;
-        int currPosSave = currPos;
-
-        float angle = 20f;
-        for (int i = 0 + currPosSave; i < (segments + 1) + currPosSave; i++)
-        {
-            x = Mathf.Sin(Mathf.Deg2Rad * angle) * xradius / transform.localScale.x;
-            y = Mathf.Cos(Mathf.Deg2Rad * angle) * yradius / transform.localScale.y;
-            line.SetPosition(i, new Vector3(x, y, 0));
-            angle += (360f / segments);
-            currPos++;
-        }
-    }
+    private float x;
+    private float y;
+    private float angle = 20f;
 
     private void Awake()
     {
-        currPos = 0;
+
         orbitSize = gameObject.GetComponent<MeshRenderer>().bounds.size.x;
         gravitySize = orbitSize * 2;
         if (orbitSize < 4)
@@ -46,15 +34,55 @@ public class PlanetScript : MonoBehaviour
         }
 
         //отрисовка
-        line = gameObject.GetComponent<LineRenderer>();
-        line.positionCount = (segments + 1) * 2;
-        line.useWorldSpace = false;
+        orbitRenderer.positionCount = segments + 1;
+        orbitRenderer.generateLightingData = true;
+        orbitRenderer.useWorldSpace = false;
+        orbitRenderer.startWidth = orbitRideZone;
+        orbitRenderer.endWidth = orbitRideZone;
+        orbitRenderer.loop = true;
+        orbitRadiusRenderer.positionCount = segments + 1;
+        orbitRadiusRenderer.generateLightingData = true;
+        orbitRadiusRenderer.useWorldSpace = false;
+        orbitRadiusRenderer.startWidth = radiuseRenderWidth;
+        orbitRadiusRenderer.endWidth = radiuseRenderWidth;
+        orbitRadiusRenderer.loop = true;
+        gravityRadiusRenderer.positionCount = segments + 1;
+        gravityRadiusRenderer.generateLightingData = true;
+        gravityRadiusRenderer.useWorldSpace = false;
+        gravityRadiusRenderer.startWidth = radiuseRenderWidth;
+        gravityRadiusRenderer.endWidth = radiuseRenderWidth;
+        gravityRadiusRenderer.loop = true;
+
         xradius = orbitSize;
         yradius = orbitSize;
-        CreatePoints();
+        for (int i = 0; i < (segments + 1); i++)
+        {
+            x = Mathf.Sin(Mathf.Deg2Rad * angle) * xradius / transform.localScale.x;
+            y = Mathf.Cos(Mathf.Deg2Rad * angle) * yradius / transform.localScale.y;
+            orbitRadiusRenderer.SetPosition(i, new Vector3(x, y, 0));
+            angle += (360f / segments) - 0.055f;
+        }
+
         xradius = gravitySize;
         yradius = gravitySize;
-        CreatePoints();
+        for (int i = 0; i < (segments + 1); i++)
+        {
+            x = Mathf.Sin(Mathf.Deg2Rad * angle) * xradius / transform.localScale.x;
+            y = Mathf.Cos(Mathf.Deg2Rad * angle) * yradius / transform.localScale.y;
+            gravityRadiusRenderer.SetPosition(i, new Vector3(x, y, 0));
+            angle += (360f / segments) - 0.055f;
+        }
+
+        xradius = orbitSize - (orbitRideZone / 2);
+        yradius = orbitSize - (orbitRideZone / 2);
+        for (int i = 0; i < (segments + 1); i++)
+        {
+            x = Mathf.Sin(Mathf.Deg2Rad * angle) * xradius / transform.localScale.x;
+            y = Mathf.Cos(Mathf.Deg2Rad * angle) * yradius / transform.localScale.y;
+            orbitRenderer.SetPosition(i, new Vector3(x, y, 0));
+            angle += (360f / segments) - 0.055f;
+        }
+
         trustActive = false;
     }
 

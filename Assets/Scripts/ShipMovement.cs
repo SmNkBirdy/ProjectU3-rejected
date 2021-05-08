@@ -1,18 +1,26 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ShipMovement : MonoBehaviour
 {
+    public float fuel = 100;
+
     public float rotateSpeed = 1f; //скорость поворота
     public float shipSpeed = 5; //скорость коробля
     public float trustSpeed = 5; //мощность буста
     public float trustTime = 1; //продолжительность полёта
     public float enginePower = 0; //индикация мощности движка
     public bool trustActive; //индикация работы буста
+    public float maxFuel = 100;
+    public bool landing;
     public speedBar sb;
     public GameObject sc1;
     public GameObject sc2;
     public GameObject sc3;
+    public GameObject tr1;
+    public GameObject tr2;
+    public GameObject tr3;
+    public Slider fuelBar;
 
     private float trustStart;
     private bool onOrbit;
@@ -26,6 +34,7 @@ public class ShipMovement : MonoBehaviour
     private RigidbodyConstraints strbc;
     private float orbitSpeed;
     private float orbSpMul = 1;
+    private float rideZone;
 
     private void Awake()
     {
@@ -44,38 +53,30 @@ public class ShipMovement : MonoBehaviour
         onOrbit = sn.onOrbit;
         distance = sn.distanceFromPlanet;
         angle = sn.angle;
+        rideZone = sn.orbitRideZone;
     }
 
-    private void turnShip(float neededAngle,float rotateFactor)
+    public void lowerSpeed()
     {
-        if (angle < neededAngle)
-        {
-            transform.Rotate(new Vector3(1, 0, 0), rotateSpeed * rotateFactor * Time.deltaTime);
-            if (angle > sn.getAngle())
-            {
-                transform.Rotate(new Vector3(-1, 0, 0), rotateSpeed * rotateFactor * 2 * Time.deltaTime);
-            }
-        }
+        sb.speed = 0.4f;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        fuelBar.value = fuel / maxFuel;
+        if (Input.GetKeyDown(KeyCode.Space) && !landing)
         {
-            if (rideOrbit)
+            if (rideOrbit && fuel > 10)
             {
                 trustStart = Time.time;
                 rb.constraints = strbc;
                 sb.speed = 1;
+                fuel -= 10;
+                fuelBar.value = fuel / maxFuel;
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && !landing)
         {
             if (sb.speed < 1 && rideOrbit)
             {
@@ -87,7 +88,7 @@ public class ShipMovement : MonoBehaviour
             sb.speed = 1;
         }
 
-        if (Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetKey(KeyCode.LeftControl) && !landing)
         {
             if (sb.speed > 0 && rideOrbit)
             {
@@ -102,6 +103,7 @@ public class ShipMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         orbSpMul = sb.speed;
 
         getComputedData();
@@ -119,14 +121,13 @@ public class ShipMovement : MonoBehaviour
 
         //поддержание на орбите
 
-        if (onOrbit && orbitSize - .75f < distance && angle > 70 && angle < 110 && !rideOrbit && !trustActive)
+        if (onOrbit && orbitSize - rideZone < distance && angle > 70 && angle < 110 && !rideOrbit && !trustActive)
         {
             rideOrbit = true;
             sc1.SetActive(true);
             sc2.SetActive(true);
             sc3.SetActive(true);
             rb.constraints = RigidbodyConstraints.FreezeAll;
-            Debug.Log(orbitSpeed);
         }
 
         if (rideOrbit)
@@ -139,6 +140,13 @@ public class ShipMovement : MonoBehaviour
                 sc3.SetActive(false);
             }
             Vector3 direction = (curPlanet.transform.position - transform.position).normalized;
+
+            float bruhoAnggle = Vector3.Angle(direction, transform.up);
+            if (bruhoAnggle < 90)
+            {
+                transform.Rotate(new Vector3(0, 0, 180));
+            }
+
             if (angle > 90)
             {
                 transform.Rotate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
@@ -157,15 +165,39 @@ public class ShipMovement : MonoBehaviour
                     transform.Rotate(new Vector3(-1, 0, 0) * 50 * Time.fixedDeltaTime * 2);
                 }
             }
-            transform.position += transform.forward * orbitSpeed * orbSpMul * Time.fixedDeltaTime / 2;
-            if (distance > orbitSize)
+            if (landing)
             {
-                transform.position += direction * 0.001f;
+                sc1.SetActive(false);
+                sc2.SetActive(false);
+                sc3.SetActive(false);
+                tr1.SetActive(false);
+                tr2.SetActive(false);
+                tr3.SetActive(false);
             }
-            else if (distance < orbitSize)
+            else
             {
-                transform.position -= direction * 0.001f;
+                transform.position += transform.forward * orbitSpeed * orbSpMul * Time.fixedDeltaTime / 2;
+                if (distance > orbitSize)
+                {
+                    transform.position += direction * 0.002f;
+                }
+                else if (distance < orbitSize)
+                {
+                    transform.position -= direction * 0.002f;
+                }
+                tr1.SetActive(true);
+                tr2.SetActive(true);
+                tr3.SetActive(true);
+                sc1.SetActive(true);
+                sc2.SetActive(true);
+                sc3.SetActive(true);
             }
+        }
+        else
+        {
+            sc1.SetActive(false);
+            sc2.SetActive(false);
+            sc3.SetActive(false);
         }
     }
 }
