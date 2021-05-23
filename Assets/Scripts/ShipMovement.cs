@@ -18,6 +18,7 @@ public class ShipMovement : MonoBehaviour
     public GameObject sc3;
     public Slider fuelBar;
 
+    private float rotateMult;
     private float trustStart;
     private bool onOrbit;
     public bool rideOrbit;
@@ -124,6 +125,7 @@ public class ShipMovement : MonoBehaviour
             sc2.SetActive(true);
             sc3.SetActive(true);
             rb.constraints = RigidbodyConstraints.FreezeAll;
+
         }
 
         if (rideOrbit)
@@ -137,33 +139,40 @@ public class ShipMovement : MonoBehaviour
             }
             Vector3 direction = (curPlanet.transform.position - transform.position).normalized;
 
+            if (distance > orbitSize)
+            {
+                rotateMult = 3  /distance + 1;
+                transform.position += direction * (distance - orbitSize + 1) * Time.fixedDeltaTime;
+            }
+            else if (distance < orbitSize)
+            {
+                rotateMult = 1;
+                transform.position -= direction * Time.fixedDeltaTime;
+            }
+            else
+            {
+                rotateMult = 1;
+            }
+
             if (angle > 90)
             {
-                transform.Rotate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
+                transform.Rotate(new Vector3(1, 0, 0) * 50 * rotateMult * Time.fixedDeltaTime);
                 float newAngleDif = Vector3.Angle(direction, transform.forward);
                 if (newAngleDif > angle)
                 {
-                    transform.Rotate(new Vector3(-1, 0, 0) * 50 * Time.fixedDeltaTime * 2);
+                    transform.Rotate(new Vector3(-1, 0, 0) * 50 * rotateMult * Time.fixedDeltaTime * 2);
                 }
             }
             else
             {
-                transform.Rotate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
+                transform.Rotate(new Vector3(1, 0, 0) * 50 * rotateMult * Time.fixedDeltaTime);
                 float newAngleDif = Vector3.Angle(direction, transform.forward);
                 if (newAngleDif < angle)
                 {
-                    transform.Rotate(new Vector3(-1, 0, 0) * 50 * Time.fixedDeltaTime * 2);
+                    transform.Rotate(new Vector3(-1, 0, 0) * 50 * rotateMult * Time.fixedDeltaTime * 2);
                 }
             }
-                transform.position += transform.forward * orbitSpeed * orbSpMul * Time.fixedDeltaTime / 2;
-                if (distance > orbitSize)
-                {
-                    transform.position += direction * 0.002f;
-                }
-                else if (distance < orbitSize)
-                {
-                    transform.position -= direction * 0.002f;
-                }
+            transform.position += transform.forward * orbitSpeed * orbSpMul * Time.fixedDeltaTime / 2;
                 
             sc1.SetActive(true);
             sc2.SetActive(true);

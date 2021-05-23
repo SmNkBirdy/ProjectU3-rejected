@@ -61,10 +61,11 @@
     <Compile Include="Assets\Scripts\Destructible.cs" />
     <Compile Include="Assets\Scripts\SphereEffect.cs" />
     <Compile Include="Assets\Scripts\PlanetScript.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\PowerBase.cs" />
     <Compile Include="Assets\Scripts\speedBar.cs" />
     <Compile Include="Assets\Scripts\ShipNavigation.cs" />
-    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\winScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

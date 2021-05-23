@@ -27,6 +27,7 @@ public class PlanetScript : MonoBehaviour
     {
 
         orbitSize = gameObject.GetComponent<MeshRenderer>().bounds.size.x;
+        orbitRideZone = gameObject.GetComponent<MeshRenderer>().bounds.size.x/2;
         gravitySize = orbitSize * 2;
         if (orbitSize < 4)
         {
