@@ -123,6 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &22671768 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9119703074079399700, guid: 9ff421e4a3cb24b49a7b46f6c51c2652, type: 3}
+  m_PrefabInstance: {fileID: 5982731644420198719}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &182770492 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5982731644598176259, guid: 9ff421e4a3cb24b49a7b46f6c51c2652, type: 3}
@@ -1773,6 +1778,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: spaceGate
       objectReference: {fileID: 0}
+    - target: {fileID: 8445784268597801389, guid: a83c568691e8a8e4eb53ae3e2907abe9, type: 3}
+      propertyPath: winText
+      value: 
+      objectReference: {fileID: 22671768}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a83c568691e8a8e4eb53ae3e2907abe9, type: 3}
 --- !u!1 &8840653796815962741

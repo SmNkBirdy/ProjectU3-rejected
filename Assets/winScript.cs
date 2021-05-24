@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class winScript : MonoBehaviour
 {
+    public GameObject winText;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
-            Debug.Log("Win");
+            winText.SetActive(true);
         }
     }
     // Start is called before the first frame update
